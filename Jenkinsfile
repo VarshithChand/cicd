@@ -9,11 +9,6 @@ pipeline {
             }
         }
 
-        /*
-         ❌ REMOVED Build & Test stages
-         ✔ Python dependencies are handled inside Docker
-        */
-
         stage('Docker Build') {
             steps {
                 sh 'docker build -t varshithchand/python-app:latest .'
@@ -22,11 +17,13 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'varshithchand',
-                    passwordVariable: 'Varshith150711$$'
-                )]) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
                     sh '''
                     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                     docker push varshithchand/python-app:latest
@@ -40,6 +37,7 @@ pipeline {
                 sh '''
                 docker stop app || true
                 docker rm app || true
+                docker pull varshithchand/python-app:latest
                 docker run -d -p 80:5000 --name app varshithchand/python-app:latest
                 '''
             }
