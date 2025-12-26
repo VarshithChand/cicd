@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    /*
+     🔔 TRIGGER SECTION
+     This enables automatic build on every GitHub push
+    */
+    triggers {
+        githubPush()
+    }
+
     stages {
 
         stage('Clone') {
@@ -41,6 +49,15 @@ pipeline {
                 docker run -d -p 80:5000 --name app varshithchand/python-app:latest
                 '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ CI/CD Pipeline completed successfully!"
+        }
+        failure {
+            echo "❌ CI/CD Pipeline failed. Check logs."
         }
     }
 }
