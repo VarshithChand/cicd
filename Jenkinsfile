@@ -9,21 +9,14 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'pip3 install -r requirements.txt'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'python3 app.py || true'
-            }
-        }
+        /*
+         ❌ REMOVED Build & Test stages
+         ✔ Python dependencies are handled inside Docker
+        */
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t username/python-app:latest .'
+                sh 'docker build -t varshithchand/python-app:latest .'
             }
         }
 
@@ -35,8 +28,8 @@ pipeline {
                     passwordVariable: 'Varshith150711$$'
                 )]) {
                     sh '''
-                    docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker push username/python-app:latest
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push varshithchand/python-app:latest
                     '''
                 }
             }
@@ -47,10 +40,9 @@ pipeline {
                 sh '''
                 docker stop app || true
                 docker rm app || true
-                docker run -d -p 80:5000 --name app username/python-app:latest
+                docker run -d -p 80:5000 --name app varshithchand/python-app:latest
                 '''
             }
         }
     }
 }
-
