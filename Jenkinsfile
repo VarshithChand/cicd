@@ -3,7 +3,7 @@ pipeline {
 
     /*
      🔔 TRIGGER SECTION
-     This enables automatic build on every GitHub push
+     This enables automatic build on every GitHub push for me
     */
     triggers {
         githubPush()
